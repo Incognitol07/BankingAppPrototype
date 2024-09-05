@@ -47,11 +47,12 @@ class Account:
     def details(self):
         return (f"Account details:\n Account: {self._account_no}\n Balance: {self._balance}\n Total deposited: {self.total_deposit}\n Total withdrawn: {self.total_withdrawn}")
 
+
 class Customer:
     def __init__(self, name: str):
         self._name = name
         self._customer_id = IDGenerator.generate_unique_id(id_list, 1000, 9999)
-        self._accounts = []
+        self._accounts = []  # Store Account objects directly
 
     @property
     def customer_id(self):
@@ -63,33 +64,32 @@ class Customer:
     
     @property
     def accounts(self):
-        result=""
-        for idx, _account in enumerate(self._accounts, start=1):
-            result += f"{idx}. {_account}\n"
-        return result if result else "No accounts found"
+        if not self._accounts:
+            return "No accounts found"
+        result = ""
+        for idx, account in enumerate(self._accounts, start=1):
+            result += f"{idx}. Account No: {account.account_no}, Balance: {account.balance}\n"
+        return result
 
     def add_account(self):
-        account=Account()
-        i=0
-        while i<1:
-            if account.account_no not in self._accounts:
-                self._accounts.append(account.account_no)
-                i+=1
-        print(f"New account: {account.account_no}")
+        account = Account()  # Create a new account
+        self._accounts.append(account)  # Store the Account object directly
+        print(f"New account created with Account No: {account.account_no}")
         return account
     
-    def remove_account(self, account_no:int):
-        if account_no in self._accounts:
-            self._accounts.remove(account_no)
-            print(f"You removed {account_no}")
-        else:
-            raise ValueError("Invalid account number")
+    def remove_account(self, account_no: int):
+        for account in self._accounts:
+            if account_no == account.account_no:
+                self._accounts.remove(account)  # Remove the Account object
+                print(f"Removed Account No: {account_no} successfully")
+                return  # Exit after removal
+        print(f"Account No: {account_no} not found")  # If no account matches the account number
+
 
 class Bank:
     def __init__(self, name:str):
         self._name=name
         self._customers=[]
-
 
     @property
     def name(self):
