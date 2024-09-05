@@ -4,7 +4,7 @@ import os
 
 def clear_terminal():
     """Clears the terminal screen."""
-    os.system('cls')
+    os.system('cls')  # On Windows; use 'clear' for Unix-based systems
 
 class Account:
     """Represents a bank account with a unique account number and balance."""
@@ -417,7 +417,6 @@ class CLI:
             self.bank.transfer(sender_account, recipient_account, amount, pin)
         except ValueError as e:
             print(f"Error: {e}")
-
 
 if __name__ == "__main__":
     cli = CLI()
