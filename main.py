@@ -1,4 +1,9 @@
 import random
+from pyfiglet import Figlet
+import os
+
+def clear_terminal():
+    os.system('clear')
 
 class Account:
     _assigned_account_numbers = set()
@@ -55,6 +60,7 @@ class Customer:
         self._name = name
         self._customer_id = self._generate_unique_customer_id()
         self._accounts = {}  # Dictionary mapping account_no to Account objects
+        self._pin = None  # Initialize the PIN as None
 
     @classmethod
     def _generate_unique_customer_id(cls):
@@ -101,6 +107,14 @@ class Customer:
         else:
             print(f"Account No: {account_no} not found")
 
+    def set_pin(self, pin: str):
+        """Set or update the PIN for the customer."""
+        self._pin = pin
+
+    def verify_pin(self, pin: str):
+        """Verify the PIN entered by the user."""
+        return self._pin == pin
+
 class Bank:
     def __init__(self, name: str):
         self._name = name
@@ -120,8 +134,9 @@ class Bank:
             result += f"{idx}. Customer ID: {customer.customer_id}, Name: {customer.name}\n"
         return result
 
-    def add_customer(self, customer_name: str):
+    def add_customer(self, customer_name: str, pin: str):
         customer = Customer(customer_name)
+        customer.set_pin(pin)  # Set the PIN when adding the customer
         self._customers[customer.customer_id] = customer
         print(f"Customer Added with ID {customer.customer_id}")
         return customer
@@ -139,11 +154,28 @@ class Bank:
         else:
             print("Customer ID is invalid")
 
-    def transfer(self, sender_account: Account, recipient_account: Account, amount: int):
+    def transfer(self, sender_account: Account, recipient_account: Account, amount: int, pin: str):
+        # Ensure both accounts exist
         if amount <= 0:
             raise ValueError("Transfer amount must be positive")
         if amount > sender_account.balance:
             raise ValueError("Insufficient funds for transfer")
+        
+        # Verify PIN
+        sender_customer = self._find_customer_by_account(sender_account)
+        if not sender_customer.verify_pin(pin):
+            raise ValueError("Invalid PIN")
+        
+        # Perform transfer
         sender_account.withdraw(amount)
         recipient_account.deposit(amount)
         print("Transfer successful")
+
+    def _find_customer_by_account(self, account: Account):
+        """Find the customer who owns the given account."""
+        for customer in self._customers.values():
+            if account.account_no in customer._accounts:
+                return customer
+        raise ValueError("Account not found in any customer")
+
+
