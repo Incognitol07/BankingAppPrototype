@@ -1,10 +1,12 @@
+# Banking App Prototype
 
-![Logo](https://static.vecteezy.com/system/resources/previews/013/990/916/non_2x/cli-letter-logo-creative-design-with-graphic-cli-simple-and-modern-logo-in-round-triangle-shape-vector.jpg)
+![Logo](assets/images/logo.jpg)
+
 
 
 ## Demo
 
-https://developer.sage.com/banking-service/provider-api/banking-service/images/character-illustration_welcome-email_bank-feed.gif
+![Demo GIF](assets/images/demo.gif)
 
 
 Banking App Prototype
