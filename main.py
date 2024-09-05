@@ -202,13 +202,22 @@ class Bank:
             if account.account_no in customer._accounts:
                 return customer
         raise ValueError("Account not found in any customer")
+    
+    @classmethod
+    def set_pin(cls, pin: str):
+        """Set or update the PIN for the bank."""
+        cls._pin = pin
+
+    def verify_pin(self, pin: str):
+        """Verify the PIN entered by the bank."""
+        return self._pin == pin
 
 class CLI:
     """Command Line Interface for interacting with the banking system."""
     def __init__(self):
         """Initialize the CLI with a figlet font for display purposes."""
         self.figlet = Figlet(font="coil_cop")
-        self.title = "Welcome to Corzon"
+        self.title = "WELCOME TO CORZON"
 
     def run(self):
         """Run the CLI to interact with the user and perform banking operations."""
@@ -218,12 +227,17 @@ class CLI:
         clear_terminal()
         print(self.figlet.renderText(self.bank_name))
         self.bank = Bank(self.bank_name)
-        print("You will need a PIN for all crucial transactions")
-        self.pin = input("Set your PIN: ")
-        # Adding a customer with a PIN as an example
-        customer_name = input("Enter customer name: ")
-        customer = self.bank.add_customer(customer_name, self.pin)
-        print(f"Customer added with ID {customer.customer_id}")
+        print("You will need a PIN for your bank for handling all crucial transactions.")
+        while True:
+            self.bank_pin = input("Set your PIN: ")
+            self.confirm_pin = input("Confirm PIN: ")
+            if self.confirm_pin==self.bank_pin:
+                print("Confirmed successfully")
+                self.bank.set_pin(self.bank_pin)
+                break
+            else:
+                print("Inconsistent PIN \n Please try again..")
+        
 
         # Further CLI code for handling transactions, etc.
 
