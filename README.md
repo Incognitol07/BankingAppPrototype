@@ -1,12 +1,9 @@
 # Banking App Prototype
+![Logo](https://github.com/Incognitol07/BankingAppPrototype/raw/main/assets/images/logo.jpg)
 
-![Logo](assets/images/logo.jpg)
+# Demo
+![Demo GIF](https://github.com/Incognitol07/BankingAppPrototype/raw/main/assets/images/demo.gif)
 
-
-
-## Demo
-
-![Demo GIF](assets/images/demo.gif)
 
 
 Banking App Prototype
