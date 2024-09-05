@@ -1,13 +1,3 @@
-# Banking App Prototype
-![Logo](https://github.com/Incognitol07/BankingAppPrototype/blob/master/assets/images/logo.jpg)
-
-# Demo
-![Demo GIF](https://github.com/Incognitol07/BankingAppPrototype/blob/master/assets/images/demo.gif)
-
-
-
-Banking App Prototype
-
 ### Project Overview
 
 **Banking System Prototype**
