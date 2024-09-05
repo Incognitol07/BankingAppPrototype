@@ -4,7 +4,7 @@ import os
 
 def clear_terminal():
     """Clears the terminal screen."""
-    os.system('clear')
+    os.system('cls')
 
 class Account:
     """Represents a bank account with a unique account number and balance."""
@@ -214,34 +214,211 @@ class Bank:
 
 class CLI:
     """Command Line Interface for interacting with the banking system."""
+
     def __init__(self):
         """Initialize the CLI with a figlet font for display purposes."""
         self.figlet = Figlet(font="coil_cop")
         self.title = "WELCOME TO CORZON"
+        self.bank = None  # Initialize bank variable here
 
     def run(self):
         """Run the CLI to interact with the user and perform banking operations."""
         print(self.figlet.renderText(self.title))
-        print("The Simple Banking System....")
-        self.bank_name = input("Bank Name: ")
-        clear_terminal()
-        print(self.figlet.renderText(self.bank_name))
-        self.bank = Bank(self.bank_name)
-        print("You will need a PIN for your bank for handling all crucial transactions.")
         while True:
-            self.bank_pin = input("Set your PIN: ")
-            self.confirm_pin = input("Confirm PIN: ")
-            if self.confirm_pin==self.bank_pin:
-                print("Confirmed successfully")
-                self.bank.set_pin(self.bank_pin)
+            print("The Simple Banking System....")
+            print("""
+            Main Menu:
+                1. New Customer
+                2. Existing Customer
+                3. Bank Mode
+                4. Exit
+            """)
+            choice = input("Choose an option: ")
+
+            if choice == "1":
+                self.new_customer()
+            elif choice == "2":
+                self.existing_customer()
+            elif choice == "3":
+                self.bank_mode()
+            elif choice == "4":
+                print("Exiting the system...")
                 break
             else:
-                print("Inconsistent PIN \n Please try again..")
-        
+                print("Invalid option. Please choose again.")
+            clear_terminal()
 
-        # Further CLI code for handling transactions, etc.
+    def new_customer(self):
+        """Handle new customer registration."""
+        if self.bank is None:
+            self.initialize_bank()
+        print("New Customer Registration:")
+        customer_name = input("Enter your name: ")
+        pin = input("Set a 4-digit PIN: ")
+        customer = self.bank.add_customer(customer_name, pin)
+        print(f"Customer created successfully. Your ID is {customer.customer_id}")
+        self.customer_mode(customer)
 
-# Example usage
+    def existing_customer(self):
+        """Handle existing customer login."""
+        if self.bank is None:
+            print("No bank is initialized. Please initialize the bank in Bank Mode.")
+            return
+        try:
+            customer_id = int(input("Enter your customer ID: "))
+            pin = input("Enter your PIN: ")
+            customer = self.bank.get_customer(customer_id)
+            if customer.verify_pin(pin):
+                print("Login successful.")
+                self.customer_mode(customer)
+            else:
+                print("Invalid PIN.")
+        except ValueError:
+            print("Customer ID not found.")
+
+    def bank_mode(self):
+        """Bank operations."""
+        if self.bank is None:
+            self.initialize_bank()
+            clear_terminal()
+        while True:
+            print(self.figlet.renderText(self.bank_name))
+            print("""
+            Bank Mode:
+                1. View all customers
+                2. Add a new customer
+                3. Remove a customer
+                4. Exit to main menu
+            """)
+            choice = input("Choose an option: ")
+
+            if choice == "1":
+                print(self.bank.customers)
+            elif choice == "2":
+                self.add_bank_customer()
+            elif choice == "3":
+                self.remove_bank_customer()
+            elif choice == "4":
+                print("Exiting to main menu...")
+                break
+            else:
+                print("Invalid option. Please try again.")
+
+    def initialize_bank(self):
+        """Initialize the bank with a name and PIN."""
+        print("Initializing the Bank...")
+        self.bank_name = input("Enter the bank's name: ")
+        self.bank = Bank(self.bank_name)
+        while True:
+            bank_pin = input("Set your 4-digit bank PIN: ")
+            confirm_pin = input("Confirm your bank PIN: ")
+            if bank_pin == confirm_pin:
+                Bank.set_pin(bank_pin)
+                print("Bank PIN set successfully.")
+                break
+            else:
+                print("PINs do not match. Please try again.")
+
+    def add_bank_customer(self):
+        """Add a new customer manually from the bank mode."""
+        customer_name = input("Enter the new customer's name: ")
+        pin = input("Set a 4-digit PIN for the customer: ")
+        customer = self.bank.add_customer(customer_name, pin)
+        print(f"Customer added successfully. Customer ID: {customer.customer_id}")
+
+    def remove_bank_customer(self):
+        """Remove a customer from the bank mode."""
+        try:
+            customer_id = int(input("Enter the customer ID to remove: "))
+            self.bank.remove_customer(customer_id)
+        except ValueError:
+            print("Invalid customer ID.")
+
+    def customer_mode(self, customer):
+        """Menu for customer operations."""
+        while True:
+            print(self.figlet.renderText(self.bank_name))
+            print("""
+            Customer Mode:
+                1. View all accounts and balances
+                2. View details of a specific account
+                3. Add a new account
+                4. Delete an account
+                5. Deposit money
+                6. Withdraw money
+                7. Transfer money
+                8. Exit to main menu
+            """)
+            choice = input("Choose an option: ")
+
+            if choice == "1":
+                print(customer.accounts)
+            elif choice == "2":
+                try:
+                    account_no = int(input("Enter the account number: "))
+                    account = customer.get_account(account_no)
+                    print(account.details())
+                except ValueError:
+                    print("Account not found.")
+            elif choice == "3":
+                customer.add_account()
+            elif choice == "4":
+                try:
+                    account_no = int(input("Enter the account number to delete: "))
+                    customer.remove_account(account_no)
+                except ValueError:
+                    print("Account not found.")
+            elif choice == "5":
+                self.deposit_money(customer)
+            elif choice == "6":
+                self.withdraw_money(customer)
+            elif choice == "7":
+                self.transfer_money(customer)
+            elif choice == "8":
+                print("Exiting to main menu...")
+                break
+            else:
+                print("Invalid option. Please try again.")
+            clear_terminal()
+
+    def deposit_money(self, customer):
+        """Handle depositing money into an account."""
+        try:
+            account_no = int(input("Enter the account number to deposit into: "))
+            account = customer.get_account(account_no)
+            amount = int(input("Enter the amount to deposit: "))
+            account.deposit(amount)
+            print(f"Deposit successful. New balance: {account.balance}")
+        except ValueError as e:
+            print(f"Error: {e}")
+
+    def withdraw_money(self, customer):
+        """Handle withdrawing money from an account."""
+        try:
+            account_no = int(input("Enter the account number to withdraw from: "))
+            account = customer.get_account(account_no)
+            amount = int(input("Enter the amount to withdraw: "))
+            account.withdraw(amount)
+            print(f"Withdrawal successful. New balance: {account.balance}")
+        except ValueError as e:
+            print(f"Error: {e}")
+
+    def transfer_money(self, customer):
+        """Handle money transfer between accounts."""
+        try:
+            sender_acc_no = int(input("Enter your account number: "))
+            sender_account = customer.get_account(sender_acc_no)
+            recipient_acc_no = int(input("Enter recipient's account number: "))
+            recipient_customer = self.bank.get_customer(
+                int(input("Enter recipient's customer ID: ")))
+            recipient_account = recipient_customer.get_account(recipient_acc_no)
+            amount = int(input("Enter the amount to transfer: "))
+            pin = input("Enter your PIN for verification: ")
+            self.bank.transfer(sender_account, recipient_account, amount, pin)
+        except ValueError as e:
+            print(f"Error: {e}")
+
+
 if __name__ == "__main__":
     cli = CLI()
     cli.run()
