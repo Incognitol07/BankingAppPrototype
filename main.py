@@ -246,15 +246,14 @@ class CLI:
                 break
             else:
                 print("Invalid option. Please choose again.")
-            clear_terminal()
 
     def new_customer(self):
         """Handle new customer registration."""
         if self.bank is None:
             self.initialize_bank()
-        print("New Customer Registration:")
+        print("New Customer Registration")
         customer_name = input("Enter your name: ")
-        pin = input("Set a 4-digit PIN: ")
+        pin = int(input("Set a 4-digit PIN: "))
         customer = self.bank.add_customer(customer_name, pin)
         print(f"Customer created successfully. Your ID is {customer.customer_id}")
         self.customer_mode(customer)
@@ -338,6 +337,14 @@ class CLI:
         """Menu for customer operations."""
         while True:
             print(self.figlet.renderText(self.bank_name))
+
+            # Display customer ID and account numbers at the top
+            print(f"Customer ID: {customer.customer_id}")
+            if customer.accounts != "No accounts found":
+                print(f"Accounts:\n{customer.accounts}")
+            else:
+                print("No accounts available.")
+
             print("""
             Customer Mode:
                 1. View all accounts and balances
@@ -379,14 +386,14 @@ class CLI:
                 break
             else:
                 print("Invalid option. Please try again.")
-            clear_terminal()
+
 
     def deposit_money(self, customer):
         """Handle depositing money into an account."""
         try:
             account_no = int(input("Enter the account number to deposit into: "))
             account = customer.get_account(account_no)
-            amount = int(input("Enter the amount to deposit: "))
+            amount = int(input("Enter the amount to deposit: $"))
             account.deposit(amount)
             print(f"Deposit successful. New balance: {account.balance}")
         except ValueError as e:
@@ -397,7 +404,7 @@ class CLI:
         try:
             account_no = int(input("Enter the account number to withdraw from: "))
             account = customer.get_account(account_no)
-            amount = int(input("Enter the amount to withdraw: "))
+            amount = int(input("Enter the amount to withdraw: $"))
             account.withdraw(amount)
             print(f"Withdrawal successful. New balance: {account.balance}")
         except ValueError as e:
@@ -412,7 +419,7 @@ class CLI:
             recipient_customer = self.bank.get_customer(
                 int(input("Enter recipient's customer ID: ")))
             recipient_account = recipient_customer.get_account(recipient_acc_no)
-            amount = int(input("Enter the amount to transfer: "))
+            amount = int(input("Enter the amount to transfer: $"))
             pin = input("Enter your PIN for verification: ")
             self.bank.transfer(sender_account, recipient_account, amount, pin)
         except ValueError as e:
